@@ -31,9 +31,7 @@ def minimal_IEX_preprocessing(df: pd.DataFrame) -> pd.DataFrame:
     # make 1 datetime column
     df['datetime'] = df['date'] + "," + df['minute']
     df['datetime'] = pd.to_datetime(df['datetime'], format='%Y-%m-%d,%H:%M')
-    del df['date']
-    del df['minute']
-    del df['label']
+    df.drop(columns=['date', 'minute', 'label'], inplace=True)
 
     # sort data by from old datetime to new datetime
     df.sort_values(by=['datetime']).reset_index(drop=True, inplace=True)
@@ -53,3 +51,7 @@ def get_raw_data(csv_file_path: [str, Path]) -> Optional[pd.DataFrame]:
         df = pd.read_csv(csv_file_path)
 
     return df
+
+
+def calc_roc(df, col, length):
+    df[col + ]
