@@ -53,10 +53,6 @@ def get_raw_data(csv_file_path: [str, Path]) -> Optional[pd.DataFrame]:
     return df
 
 
-<<<<<<< Updated upstream
-def calc_roc(df, col, length):
-    df[col + ]
-=======
 def roc(df, col, length):
     """ calc rate of change on given column, using given length """
     return df[col] / df[col].shift(length) - 1
@@ -72,4 +68,3 @@ def add_times(df, col):
 
     df['minute_of_day'] = df['minute'] + df['hour']*60
     df['day_of_week'] = df['datetime'].dt.dayofweek
->>>>>>> Stashed changes
