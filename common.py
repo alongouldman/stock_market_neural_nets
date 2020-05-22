@@ -41,15 +41,17 @@ def minimal_IEX_preprocessing(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
-def get_raw_data(csv_file_path: [str, Path]) -> Optional[pd.DataFrame]:
-    """ get path to csv file, and return it as dataframe """
+def rate_of_change(df: pd.DataFrame, col: str, length: int) -> pd.DataFrame:
+    """ calc rate of change on given column, using given length """
+    return df[col] / df[col].shift(length) - 1
 
-    # convert string input to Path type
-    if isinstance(csv_file_path, str):
-        csv_file_path = Path(csv_file_path)
 
-    df = None
-    if csv_file_path.exists():
-        df = pd.read_csv(csv_file_path)
+def add_times(df: pd.DataFrame, col: str):
+    """ split datetime column to its components (ie minute, hour, day etc...) """
 
-    return df
+    df['minute'] = df[col].dt.minute
+    df['hour'] = df[col].dt.hour
+    df['day'] = df[col].dt.day
+    df['month'] = df[col].dt.month
+    df['minute_of_day'] = df['minute'] + df['hour']*60
+    df['day_of_week'] = df['datetime'].dt.dayofweek
