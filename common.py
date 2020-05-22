@@ -31,7 +31,9 @@ def minimal_IEX_preprocessing(df: pd.DataFrame) -> pd.DataFrame:
     # make 1 datetime column
     df['datetime'] = df['date'] + "," + df['minute']
     df['datetime'] = pd.to_datetime(df['datetime'], format='%Y-%m-%d,%H:%M')
-    df.drop(columns=['date', 'minute', 'label'], inplace=True)
+    del df['date']
+    del df['minute']
+    del df['label']
 
     # sort data by from old datetime to new datetime
     df.sort_values(by=['datetime']).reset_index(drop=True, inplace=True)
@@ -39,32 +41,17 @@ def minimal_IEX_preprocessing(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
-def get_raw_data(csv_file_path: [str, Path]) -> Optional[pd.DataFrame]:
-    """ get path to csv file, and return it as dataframe """
-
-    # convert string input to Path type
-    if isinstance(csv_file_path, str):
-        csv_file_path = Path(csv_file_path)
-
-    df = None
-    if csv_file_path.exists():
-        df = pd.read_csv(csv_file_path)
-
-    return df
-
-
-def roc(df, col, length):
+def rate_of_change(df: pd.DataFrame, col: str, length: int) -> pd.DataFrame:
     """ calc rate of change on given column, using given length """
     return df[col] / df[col].shift(length) - 1
 
 
-def add_times(df, col):
+def add_times(df: pd.DataFrame, col: str):
     """ split datetime column to its components (ie minute, hour, day etc...) """
 
     df['minute'] = df[col].dt.minute
     df['hour'] = df[col].dt.hour
     df['day'] = df[col].dt.day
     df['month'] = df[col].dt.month
-
     df['minute_of_day'] = df['minute'] + df['hour']*60
     df['day_of_week'] = df['datetime'].dt.dayofweek
