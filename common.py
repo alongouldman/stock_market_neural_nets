@@ -13,7 +13,7 @@ def clean_data(df: pd.DataFrame) -> pd.DataFrame:
     df['dayofweek'] = df['datetime'].dt.dayofweek
     df = df[df['open'].notna()]
     df = df.sort_values(by=['datetime']).reset_index(drop=True)
-    return df
+    return df   
 
 
 def get_stock_data(ticker: str) -> Optional[pd.DataFrame]:
