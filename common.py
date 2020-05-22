@@ -2,6 +2,20 @@
 import pandas as pd
 from typing import Optional
 from pathlib import Path
+import plotly.graph_objects as go
+
+
+def normalize_dataframe(dataframe: pd.DataFrame) -> pd.DataFrame:
+    return (dataframe-dataframe.min())/(dataframe.max()-dataframe.min())
+
+
+def plot_ohlc_graph_from_dataframe(datafram: pd.DataFrame):
+    fig = go.Figure(data=go.Ohlc(x=datafram['datetime'],
+                        open=datafram['open'],
+                        high=datafram['high'],
+                        low=datafram['low'],
+                        close=datafram['close']))
+    fig.show()
 
 
 def clean_data(df: pd.DataFrame) -> pd.DataFrame:
