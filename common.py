@@ -62,3 +62,8 @@ def display_all(df: pd.DataFrame):
     """ display dataframe up to 1000 rows and columns (taken from FastAI) """
     with pd.option_context("display.max_rows", 1000, "display.max_columns", 1000):
         display(df)
+
+
+def avg_PL(pred_roc, actual_roc):
+    """ calculate the profit/loss of every prediction """
+    return (pred_roc > 0) * actual_roc - (pred_roc <= 0) * actual_roc
