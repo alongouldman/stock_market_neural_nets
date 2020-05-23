@@ -2,6 +2,7 @@
 import pandas as pd
 from typing import Optional
 from pathlib import Path
+from IPython.display import display
 
 
 def clean_data(df: pd.DataFrame) -> pd.DataFrame:
@@ -55,3 +56,9 @@ def add_times(df: pd.DataFrame, col: str):
     df['month'] = df[col].dt.month
     df['minute_of_day'] = df['minute'] + df['hour']*60
     df['day_of_week'] = df['datetime'].dt.dayofweek
+
+
+def display_all(df: pd.DataFrame):
+    """ display dataframe up to 1000 rows and columns (taken from FastAI) """
+    with pd.option_context("display.max_rows", 1000, "display.max_columns", 1000):
+        display(df)
