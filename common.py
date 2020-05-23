@@ -64,6 +64,6 @@ def display_all(df: pd.DataFrame):
         display(df)
 
 
-def avg_PL(pred_roc, actual_roc):
+def rate_of_change_PL(pred_roc, actual_roc):
     """ calculate the profit/loss of every prediction """
     return (pred_roc > 0) * actual_roc - (pred_roc <= 0) * actual_roc
