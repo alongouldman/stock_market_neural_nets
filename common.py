@@ -1,8 +1,28 @@
-
+import numpy as np
 import pandas as pd
 from typing import Optional
 from pathlib import Path
 from IPython.display import display
+import plotly.graph_objects as go
+
+
+def normalize_dataframe(dataframe: pd.DataFrame) -> pd.DataFrame:
+    return (dataframe - dataframe.min()) / (dataframe.max() - dataframe.min())
+
+
+def normalize_with_window(dataframe: pd.DataFrame, window_size: int) -> pd.DataFrame:
+    # epsilon is added in order to prevent zero devision
+    return (dataframe - dataframe.rolling(window_size).min()) / (
+                dataframe.rolling(window_size).max() - dataframe.rolling(window_size).min() + np.finfo(float).eps)
+
+
+def plot_ohlc_graph_from_dataframe(datafram: pd.DataFrame):
+    fig = go.Figure(data=go.Ohlc(x=datafram['datetime'],
+                                 open=datafram['open'],
+                                 high=datafram['high'],
+                                 low=datafram['low'],
+                                 close=datafram['close']))
+    fig.show()
 
 
 def clean_data(df: pd.DataFrame) -> pd.DataFrame:
@@ -10,7 +30,7 @@ def clean_data(df: pd.DataFrame) -> pd.DataFrame:
     df['datetime'] = pd.to_datetime(df['datetime'], format='%Y-%m-%d,%H:%M')
     del df['date']
     del df['label']
-    df['minute'] = df['minute'].str.replace(":",  "", regex=False).astype(int)
+    df['minute'] = df['minute'].str.replace(":", "", regex=False).astype(int)
     df['dayofweek'] = df['datetime'].dt.dayofweek
     df = df[df['open'].notna()]
     df = df.sort_values(by=['datetime']).reset_index(drop=True)
@@ -21,7 +41,7 @@ def get_stock_data(ticker: str) -> Optional[pd.DataFrame]:
     optional_file_paths = ['data/relevant/snp500_from_iex', 'data/relevant/iex_data']
     for path in optional_file_paths:
         file_path = Path(path) / f"{ticker}.csv"
-        if file_path.exists:
+        if file_path.exists():
             return pd.read_csv(file_path)
     return None
 
@@ -47,15 +67,16 @@ def rate_of_change(df: pd.DataFrame, col: str, length: int) -> pd.DataFrame:
     return df[col] / df[col].shift(length) - 1
 
 
-def add_times(df: pd.DataFrame, col: str):
+def add_times(df: pd.DataFrame, col: str) -> pd.DataFrame:
     """ split datetime column to its components (ie minute, hour, day etc...) """
 
     df['minute'] = df[col].dt.minute
     df['hour'] = df[col].dt.hour
     df['day'] = df[col].dt.day
     df['month'] = df[col].dt.month
-    df['minute_of_day'] = df['minute'] + df['hour']*60
+    df['minute_of_day'] = df['minute'] + df['hour'] * 60
     df['day_of_week'] = df['datetime'].dt.dayofweek
+    return df
 
 
 def display_all(df: pd.DataFrame):
