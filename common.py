@@ -1,4 +1,4 @@
-
+import numpy as np
 import pandas as pd
 from typing import Optional
 from pathlib import Path
@@ -32,7 +32,7 @@ def get_stock_data(ticker: str) -> Optional[pd.DataFrame]:
     optional_file_paths = ['data/relevant/snp500_from_iex', 'data/relevant/iex_data']
     for path in optional_file_paths:
         file_path = Path(path) / f"{ticker}.csv"
-        if file_path.exists:
+        if file_path.exists():
             return pd.read_csv(file_path)
     return None
 
@@ -68,3 +68,8 @@ def add_times(df: pd.DataFrame, col: str) -> pd.DataFrame:
     df['minute_of_day'] = df['minute'] + df['hour']*60
     df['day_of_week'] = df['datetime'].dt.dayofweek
     return df
+
+
+def normalize_with_window(dataframe: pd.DataFrame, window_size: int) -> pd.DataFrame:
+    # epsilon is added in order to prevent zero devision
+    return (dataframe - dataframe.rolling(window_size).min()) / (dataframe.rolling(window_size).max() - dataframe.rolling(window_size).min() + np.finfo(float).eps)
