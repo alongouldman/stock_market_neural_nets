@@ -2,18 +2,12 @@ import numpy as np
 import pandas as pd
 from typing import Optional
 from pathlib import Path
-from IPython.display import display
 import plotly.graph_objects as go
+from IPython.display import display
 
 
 def normalize_dataframe(dataframe: pd.DataFrame) -> pd.DataFrame:
     return (dataframe - dataframe.min()) / (dataframe.max() - dataframe.min())
-
-
-def normalize_with_window(dataframe: pd.DataFrame, window_size: int) -> pd.DataFrame:
-    # epsilon is added in order to prevent zero devision
-    return (dataframe - dataframe.rolling(window_size).min()) / (
-                dataframe.rolling(window_size).max() - dataframe.rolling(window_size).min() + np.finfo(float).eps)
 
 
 def plot_ohlc_graph_from_dataframe(datafram: pd.DataFrame):
@@ -88,3 +82,8 @@ def display_all(df: pd.DataFrame):
 def rate_of_change_PnL(pred_roc, actual_roc):
     """ calculate the profit/loss of every prediction """
     return (pred_roc > 0) * actual_roc - (pred_roc <= 0) * actual_roc
+
+
+def normalize_with_window(dataframe: pd.DataFrame, window_size: int) -> pd.DataFrame:
+    # epsilon is added in order to prevent zero devision
+    return (dataframe - dataframe.rolling(window_size).min()) / (dataframe.rolling(window_size).max() - dataframe.rolling(window_size).min() + np.finfo(float).eps)
