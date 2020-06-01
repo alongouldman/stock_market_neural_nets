@@ -3,18 +3,19 @@ import pandas as pd
 from typing import Optional
 from pathlib import Path
 import plotly.graph_objects as go
+from IPython.display import display
 
 
 def normalize_dataframe(dataframe: pd.DataFrame) -> pd.DataFrame:
-    return (dataframe-dataframe.min())/(dataframe.max()-dataframe.min())
+    return (dataframe - dataframe.min()) / (dataframe.max() - dataframe.min())
 
 
 def plot_ohlc_graph_from_dataframe(datafram: pd.DataFrame):
     fig = go.Figure(data=go.Ohlc(x=datafram['datetime'],
-                        open=datafram['open'],
-                        high=datafram['high'],
-                        low=datafram['low'],
-                        close=datafram['close']))
+                                 open=datafram['open'],
+                                 high=datafram['high'],
+                                 low=datafram['low'],
+                                 close=datafram['close']))
     fig.show()
 
 
@@ -23,6 +24,8 @@ def clean_data(df: pd.DataFrame) -> pd.DataFrame:
     df['datetime'] = pd.to_datetime(df['datetime'], format='%Y-%m-%d,%H:%M')
     del df['date']
     del df['label']
+    df['minute'] = df['minute'].str.replace(":", "", regex=False).astype(int)
+    df['dayofweek'] = df['datetime'].dt.dayofweek
     df = df[df['open'].notna()]
     df = df.sort_values(by=['datetime']).reset_index(drop=True)
     return df
@@ -65,9 +68,20 @@ def add_times(df: pd.DataFrame, col: str) -> pd.DataFrame:
     df['hour'] = df[col].dt.hour
     df['day'] = df[col].dt.day
     df['month'] = df[col].dt.month
-    df['minute_of_day'] = df['minute'] + df['hour']*60
+    df['minute_of_day'] = df['minute'] + df['hour'] * 60
     df['day_of_week'] = df['datetime'].dt.dayofweek
     return df
+
+
+def display_all(df: pd.DataFrame):
+    """ display dataframe up to 1000 rows and columns (taken from FastAI) """
+    with pd.option_context("display.max_rows", 1000, "display.max_columns", 1000):
+        display(df)
+
+
+def rate_of_change_PnL(pred_roc, actual_roc):
+    """ calculate the profit/loss of every prediction """
+    return (pred_roc > 0) * actual_roc - (pred_roc <= 0) * actual_roc
 
 
 def normalize_with_window(dataframe: pd.DataFrame, window_size: int) -> pd.DataFrame:
