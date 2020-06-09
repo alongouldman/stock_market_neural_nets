@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-from typing import Optional
+from typing import Optional, List
 from pathlib import Path
 import plotly.graph_objects as go
 from IPython.display import display
@@ -31,12 +31,15 @@ def clean_data(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
-def get_stock_data(ticker: str) -> Optional[pd.DataFrame]:
+def get_stock_data(ticker: str, columns: Optional[List[str]] = None) -> Optional[pd.DataFrame]:
     optional_file_paths = ['data/relevant/snp500_from_iex', 'data/relevant/iex_data']
     for path in optional_file_paths:
         file_path = Path(path) / f"{ticker}.csv"
         if file_path.exists():
-            return pd.read_csv(file_path)
+            if columns:
+                return pd.read_csv(file_path, usecols=columns)
+            else:
+                return pd.read_csv(file_path)
     return None
 
 
