@@ -31,8 +31,9 @@ def clean_data(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
-def get_stock_data(ticker: str, columns: Optional[List[str]] = None) -> Optional[pd.DataFrame]:
-    optional_file_paths = ['data/relevant/snp500_from_iex', 'data/relevant/iex_data']
+def get_stock_data(ticker: str, columns: Optional[List[str]] = None, optional_file_paths: Optional[List[str]] = None) -> Optional[pd.DataFrame]:
+    if not optional_file_paths:
+        optional_file_paths = ['data/relevant/snp500_from_iex', 'data/relevant/iex_data']
     for path in optional_file_paths:
         file_path = Path(path) / f"{ticker}.csv"
         if file_path.exists():
@@ -41,6 +42,10 @@ def get_stock_data(ticker: str, columns: Optional[List[str]] = None) -> Optional
             else:
                 return pd.read_csv(file_path)
     return None
+
+
+def get_dukas_data(ticker: str):
+    return get_stock_data(f'{ticker}.USUSD', optional_file_paths=['data/relevant/dukascopy/BID'])
 
 
 def minimal_IEX_preprocessing(df: pd.DataFrame) -> pd.DataFrame:
