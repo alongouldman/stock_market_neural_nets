@@ -1,9 +1,23 @@
+from pathlib import Path
+from typing import Optional, List
+
 import numpy as np
 import pandas as pd
-from typing import Optional, List
-from pathlib import Path
 import plotly.graph_objects as go
 from IPython.display import display
+
+
+class StockData:
+    data_sets = ['training', 'validation', 'test']
+
+    def __init__(self, stock_ticker: str):
+        self.ticker = stock_ticker
+        data_folder = Path('data_feather')
+        for val in self.data_sets:
+            folder = data_folder / val
+            ticker_data_file = next(ticker for ticker in folder.iterdir() if ticker.name.split(".")[0].lower() == self.ticker.lower())
+            df = pd.read_feather(ticker_data_file)
+            setattr(self, val, df)
 
 
 def normalize_dataframe(dataframe: pd.DataFrame) -> pd.DataFrame:
