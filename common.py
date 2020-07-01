@@ -20,6 +20,12 @@ class StockData:
             setattr(self, val, df)
 
 
+def get_all_stocks():
+    data_folder = Path('data_feather/training')
+    for stock in data_folder.iterdir():
+        yield stock.name.split(".")[0]
+
+
 def normalize_dataframe(dataframe: pd.DataFrame) -> pd.DataFrame:
     return (dataframe - dataframe.min()) / (dataframe.max() - dataframe.min())
 
