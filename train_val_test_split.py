@@ -16,6 +16,7 @@ for data_type in ['training', 'validation', 'test']:
 
 for ticker_file in all_tickers_folder.iterdir():
 	df = pd.read_feather(ticker_file)
+	df['target'] = df['close'].shift(-10) / df['close'] - 1
 
 	training_set = df[df['datetime'] < START_OF_VALIDATION_SET]
 	training_set.to_feather(data_folder / 'training' / ticker_file.name)
